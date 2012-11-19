@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+var nodefy = require('../index');
+var cli = require('commander');
+
+cli
+    .description('convert AMD modules into node.js compatible modules.')
+    .usage('[options] [globs...]')
+    .option('-o,--output <folder>', 'Output folder. If omitted it will output to stdout.')
+
+cli.parse(process.argv);
+
+if (cli.args) {
+    var globs = cli.args.join();
+    // nodefy
+}
+

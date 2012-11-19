@@ -1,0 +1,34 @@
+{
+  "name": "nodefy",
+  "version": "0.1.0",
+  "description": "convert AMD modules into a node.js compatible format",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/jasmine-node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/millermedeiros/nodefy.git"
+  },
+  "keywords": [ "amd", "cjs", "modules", "convert" ],
+  "author": {
+    "name" : "Miller Medeiros",
+    "url" : "http://blog.millermedeiros.com/"
+  },
+  "dependencies" : {
+    "esprima" : ">= 1.0 <1.2",
+    "glob" : "~3.1.14",
+    "async" : "~0.1.22",
+    "commander" : "~1.1.0"
+  },
+  "devDependencies" : {
+    "jasmine-node" : "~1.0.26"
+  },
+  "engine" : {
+    "node" : ">= 0.8"
+  },
+  "license": "MIT"
+}
