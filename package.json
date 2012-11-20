@@ -1,6 +1,6 @@
 {
   "name": "nodefy",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "convert AMD modules into a node.js compatible format",
   "main": "index.js",
   "directories": {

@@ -1,4 +1,8 @@
 
+var SHOULD_PURGE = true;
+
+// ---
+
 var _fs = require('fs');
 var _path = require('path');
 
@@ -21,9 +25,21 @@ exports.readFile = function(path){
 
 
 exports.purge = function(dir){
+    if (! SHOULD_PURGE) return;
     _fs.readdirSync(dir).forEach(function(relPath){
-        _fs.unlinkSync( _path.join(dir, relPath) );
+        var path = _path.join(dir, relPath);
+        if ( _fs.statSync(path).isDirectory() ){
+            exports.purge(path);
+        } else {
+            _fs.unlinkSync(path);
+        }
     });
     _fs.rmdirSync( dir );
 };
 
+
+exports.mkdir = function(dir){
+    if (! _fs.existsSync(dir) ) {
+        _fs.mkdirSync(dir);
+    }
+};

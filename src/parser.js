@@ -8,6 +8,7 @@ var MAGIC_DEPS = {
     'require' : true
 };
 
+var SIMPLIFIED_CJS = ['require', 'exports', 'module'];
 
 
 
@@ -42,23 +43,25 @@ exports.parse = function(raw){
 
 
 function getRequires(args, factory){
+    var requires = [];
     var deps = getDependenciesNames( args );
-
-    var params = getParams( factory ).map(function(param, i){
+    var params = factory.params.map(function(param, i){
         return {
-            name : param,
-            dep : deps[i]
+            name : param.name,
+            // simplified cjs doesn't have deps
+            dep : (deps.length)? deps[i] : SIMPLIFIED_CJS[i]
         };
     });
 
-    // only do it for dependencies that have a matching param
-    // also skip "magic" dependencies used on simplified CJS
-    params = params.filter(function(param){
-        return param.dep && !MAGIC_DEPS[param.dep];
-    });
-
-    var requires = params.map(function(param){
-        return 'var '+ param.name +' = require(\''+ param.dep +'\');';
+    params.forEach(function(param){
+        if ( MAGIC_DEPS[param.dep] && !MAGIC_DEPS[param.name] ) {
+            // if user remaped magic dependency we declare a var
+            requires.push( 'var '+ param.name +' = '+ param.dep +';' );
+        } else if ( param.dep && !MAGIC_DEPS[param.dep] ) {
+            // only do require for params that have a matching dependency also
+            // skip "magic" dependencies
+            requires.push( 'var '+ param.name +' = require(\''+ param.dep +'\');' );
+        }
     });
 
     return requires.join('\n');
@@ -66,26 +69,18 @@ function getRequires(args, factory){
 
 
 function getDependenciesNames(args){
+    var deps = [];
     var arr = args.filter(function(arg){
         return arg.type === 'ArrayExpression';
-    });
+    })[0];
 
-    var deps = [];
-
-    if (arr.length) {
-        deps = arr[0].elements.map(function(el){
+    if (arr) {
+        deps = arr.elements.map(function(el){
             return el.value;
         });
     }
 
     return deps;
-}
-
-
-function getParams(factory){
-    return factory.params.map(function(param){
-        return param.name;
-    });
 }
 
 

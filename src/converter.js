@@ -18,19 +18,19 @@ exports.convert = function(inputPath, outputPath, callback){
     }
 
     _fs.readFile(inputPath, function(err, content){
+        if (!err) {
+            try {
+                content = _parser.parse( content.toString() );
+            } catch(e){
+                err = e;
+            }
+        }
+
         if (err) {
             callback(err);
             return;
         }
 
-        try {
-            content = _parser.parse( content.toString() );
-        } catch(e){
-            callback(err);
-            return;
-        }
-
-        // output path is optional
         if (!outputPath) {
             callback(null, content);
         } else {
@@ -73,9 +73,13 @@ exports.batchConvert = function(inputGlob, outputFolder, callback){
             return;
         }
 
+        var rootFolder = getRoot(files);
+
         // convert all files in parallel
         _async.map(files, function(sourcePath, cb){
-            var outputPath = outputFolder? _path.join(outputFolder, _path.basename(sourcePath)) : null;
+            var relativePath = sourcePath.replace(rootFolder, '');
+            var outputPath = outputFolder? _path.join(outputFolder, relativePath) : null;
+
             exports.convert(sourcePath, outputPath, function(err, result){
                 cb(err, {
                     sourcePath : sourcePath,
@@ -83,7 +87,24 @@ exports.batchConvert = function(inputGlob, outputFolder, callback){
                     result : result
                 });
             });
+
         }, callback);
+
     });
 };
+
+
+// get root folder based on smallest path length
+function getRoot(paths){
+    var result,
+        compare = Infinity,
+        tmp;
+    paths.forEach(function(path, i){
+        if (path.length < compare) {
+            compare = path.length;
+            result = path;
+        }
+    });
+    return _path.dirname(result);
+}
 
