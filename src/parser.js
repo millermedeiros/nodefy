@@ -11,11 +11,7 @@ var MAGIC_DEPS = {
 
 
 
-/**
- * Convert AMD-style JavaScript string into node.js compatible module
- * @param String raw
- * @return String
- */
+// Convert AMD-style JavaScript string into node.js compatible module
 exports.parse = function(raw){
     var output = '';
     var ast = esprima.parse(raw, {

@@ -10,13 +10,16 @@ _cli
     .parse(process.argv);
 
 
-if (_cli.args) {
+if (_cli.args.length) {
 
     var glob = _cli.args[0];
-    nodefy.batchConvert(glob, _cli.output, function(err, result){
+    nodefy.batchConvert(glob, _cli.output, function(err, results){
         if (err) throw err;
         if (! _cli.output) {
-            console.log(result);
+            results = results.map(function(r){
+                return r.result;
+            });
+            console.log( results.join('\n') );
         }
     });
 

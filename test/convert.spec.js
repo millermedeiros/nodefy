@@ -97,6 +97,7 @@ describe('convert', function () {
                 expect( err ).toBe(null);
 
                 var expected = readOut('basic') + readOut('magic');
+                result = result.map(function(r){ return r.result; }).join('');
                 expect( result ).toBe( expected );
 
                 done();

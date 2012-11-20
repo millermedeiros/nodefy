@@ -8,10 +8,10 @@ var _parser = require('./parser');
 
 
 
-/**
- * Read file content and output into destination path.
- */
+
+// Read file content and output into destination path.
 exports.convert = function(inputPath, outputPath, callback){
+    // outputPath is optional
     if (typeof outputPath === 'function' && arguments.length < 3) {
         callback = outputPath;
         outputPath = null;
@@ -59,9 +59,7 @@ function safeCreateDir(filePath, callback){
 }
 
 
-/**
- * Read folder content and output files into output folder
- */
+// Read folder content and output files into output folder
 exports.batchConvert = function(inputGlob, outputFolder, callback){
     // outputFolder is optional
     if (typeof outputFolder === 'function' && arguments.length < 3) {
@@ -76,10 +74,14 @@ exports.batchConvert = function(inputGlob, outputFolder, callback){
         }
 
         // convert all files in parallel
-        _async.reduce(files, '', function(memo, filePath, cb){
-            var outputPath = outputFolder? _path.join(outputFolder, _path.basename(filePath)) : null;
-            exports.convert(filePath, outputPath, function(err, content){
-                cb(err, memo + content);
+        _async.map(files, function(sourcePath, cb){
+            var outputPath = outputFolder? _path.join(outputFolder, _path.basename(sourcePath)) : null;
+            exports.convert(sourcePath, outputPath, function(err, result){
+                cb(err, {
+                    sourcePath : sourcePath,
+                    outputPath : outputPath,
+                    result : result
+                });
             });
         }, callback);
     });
