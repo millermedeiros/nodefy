@@ -27,6 +27,9 @@
   "devDependencies" : {
     "jasmine-node" : "~1.0.26"
   },
+  "bin" : {
+    "nodefy" : "bin/nodefy"
+  },
   "engine" : {
     "node" : ">= 0.8"
   },
