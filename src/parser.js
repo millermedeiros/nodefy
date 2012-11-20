@@ -27,6 +27,8 @@ exports.parse = function(raw){
 
     if ( defines.length > 1 ){
         throw new Error('Each file can have only a single define call. Found "'+ defines.length +'"');
+    } else if (!defines.length){
+        return raw;
     }
 
     var def = defines[0];

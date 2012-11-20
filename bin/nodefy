@@ -1,17 +1,43 @@
 #!/usr/bin/env node
 
 var nodefy = require('../index');
-var cli = require('commander');
+var _cli = require('commander');
 
-cli
+_cli
     .description('convert AMD modules into node.js compatible modules.')
-    .usage('[options] [globs...]')
+    .usage('[options] [glob]')
     .option('-o,--output <folder>', 'Output folder. If omitted it will output to stdout.')
+    .parse(process.argv);
 
-cli.parse(process.argv);
 
-if (cli.args) {
-    var globs = cli.args.join();
-    // nodefy
+if (_cli.args) {
+
+    var glob = _cli.args[0];
+    nodefy.batchConvert(glob, _cli.output, function(err, result){
+        if (err) throw err;
+        if (! _cli.output) {
+            console.log(result);
+        }
+    });
+
+} else {
+
+    var buf = '';
+
+    process.stdin.on('data', function(chunk){
+        buf += chunk;
+    });
+
+    process.stdin.on('end', function(){
+        var result = nodefy.parse(buf);
+        if (_cli.output) {
+            require('fs').writeFileSync(_cli.output, result);
+        } else {
+            console.log(result);
+        }
+    });
+
+    process.stdin.resume();
+
 }
 

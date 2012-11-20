@@ -40,6 +40,28 @@ describe('convert', function () {
     });
 
 
+    it('should return string instead of writting to file if outputPath is missing', function (done) {
+        var inPath = _path.join(__dirname, 'files/basic-in.js');
+        nodefy.convert(inPath, function(err, result){
+            expect(err).toBe(null);
+            expect( result ).toBe( readOut('basic') );
+            done();
+        });
+    });
+
+    it('should return string instead of writting to file if outputPath is null', function (done) {
+        var inPath = _path.join(__dirname, 'files/basic-in.js');
+        nodefy.convert(inPath, null, function(err, result){
+            expect(err).toBe(null);
+            expect( result ).toBe( readOut('basic') );
+            done();
+        });
+    });
+
+
+    // ---
+
+
     describe('batchConvert', function () {
 
         beforeEach(function(){
@@ -65,6 +87,23 @@ describe('convert', function () {
                 done();
             });
         });
+
+
+        it('should return aggregated string from all files if missing outputPath', function (done) {
+
+            var glob = _path.join(__dirname, 'files/{basic,magic}-in.js');
+
+            nodefy.batchConvert(glob, function(err, result){
+                expect( err ).toBe(null);
+
+                var expected = readOut('basic') + readOut('magic');
+                expect( result ).toBe( expected );
+
+                done();
+            });
+        });
+
+
     });
 
 });

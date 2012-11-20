@@ -12,19 +12,39 @@ var _parser = require('./parser');
  * Read file content and output into destination path.
  */
 exports.convert = function(inputPath, outputPath, callback){
+    if (typeof outputPath === 'function' && arguments.length < 3) {
+        callback = outputPath;
+        outputPath = null;
+    }
+
     _fs.readFile(inputPath, function(err, content){
         if (err) {
             callback(err);
             return;
         }
-        content = _parser.parse( content.toString() );
-        safeCreateDir(outputPath, function(err){
-            if (err) {
-                callback(err);
-                return;
-            }
-            _fs.writeFile(outputPath, content, callback);
-        });
+
+        try {
+            content = _parser.parse( content.toString() );
+        } catch(e){
+            callback(err);
+            return;
+        }
+
+        // output path is optional
+        if (!outputPath) {
+            callback(null, content);
+        } else {
+            safeCreateDir(outputPath, function(err){
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                _fs.writeFile(outputPath, content, function(err){
+                    callback(err, content);
+                });
+            });
+        }
+
      });
 };
 
@@ -43,15 +63,24 @@ function safeCreateDir(filePath, callback){
  * Read folder content and output files into output folder
  */
 exports.batchConvert = function(inputGlob, outputFolder, callback){
+    // outputFolder is optional
+    if (typeof outputFolder === 'function' && arguments.length < 3) {
+        callback = outputFolder;
+        outputFolder = null;
+    }
+
     _glob( inputGlob, function(err, files){
         if (err) {
             callback(err);
             return;
         }
+
         // convert all files in parallel
-        _async.forEach(files, function(filePath, cb){
-            var outputPath = _path.join(outputFolder, _path.basename(filePath));
-            exports.convert(filePath, outputPath, cb);
+        _async.reduce(files, '', function(memo, filePath, cb){
+            var outputPath = outputFolder? _path.join(outputFolder, _path.basename(filePath)) : null;
+            exports.convert(filePath, outputPath, function(err, content){
+                cb(err, memo + content);
+            });
         }, callback);
     });
 };

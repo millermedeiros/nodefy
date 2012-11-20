@@ -32,5 +32,11 @@ describe('parse', function () {
         expect( output ).toEqual( readOut('named_mixed') );
     });
 
+    it('should skip conversion if file doesn\'t call `define()`', function () {
+        var output = nodefy.parse( readIn('no_define') );
+        expect( output ).not.toMatch( /require\(['"]\w/ );
+        expect( output ).toEqual( readOut('no_define') );
+    });
+
 });
 
