@@ -99,6 +99,25 @@ The name was inpired by
 [browserify](https://github.com/substack/node-browserify).
 
 
+
+## Features, Goals & Limitations
+
+The [Asynchronous Module
+Definition](https://github.com/amdjs/amdjs-api/wiki/AMD) is very flexible, it
+supports [plugins](https://github.com/amdjs/amdjs-api/wiki/Loader-Plugins),
+many [configuration
+settings](https://github.com/amdjs/amdjs-api/wiki/Common-Config) to define how
+modules should be loaded and asynchronous module loading.
+
+**This tool aims to convert basic modules**, plugins and advanced settings
+probably are NOT going to be supported in the near future (I have plans to
+support basic configs, see [issue 6](https://github.com/millermedeiros/nodefy/issues/6)).
+Check the [uRequire](https://github.com/anodynos/uRequire) project in case you need
+something more complex or create a new feature request on the [issues
+tracker](https://github.com/millermedeiros/nodefy/issues).
+
+
+
 ## Alternatives
 
  - [amdefine](https://github.com/jrburke/amdefine)
