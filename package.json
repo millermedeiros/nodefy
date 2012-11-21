@@ -1,6 +1,6 @@
 {
   "name": "nodefy",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "convert AMD modules into a node.js compatible format",
   "main": "index.js",
   "directories": {
@@ -22,7 +22,8 @@
     "esprima" : ">= 1.0 <1.2",
     "glob" : "~3.1.14",
     "async" : "~0.1.22",
-    "commander" : "~1.1.0"
+    "commander" : "~1.1.0",
+    "mkdirp" : "~0.3.4"
   },
   "devDependencies" : {
     "jasmine-node" : "~1.0.26"

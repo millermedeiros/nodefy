@@ -61,15 +61,28 @@ describe('convert', function () {
     });
 
 
-    it('should throw error if it can\'t find file', function () {
+    it('should throw error if it can\'t find file', function (done) {
         var inPath = _path.join(INPUT_DIR, 'missing_file.js');
         var outPath = _path.join(TEMP_DIR, 'missing_file.js');
         nodefy.convert(inPath, outPath, function(err, result){
             expect(err).not.toBe(null);
             expect( result ).toBeUndefined();
             expect( function(){ readFile(outPath); }).toThrow();
+            done();
         });
     });
+
+
+    it('should work with deep nested folders', function (done) {
+        var inPath = _path.join(INPUT_DIR, 'nested/deep/plugin-in.js');
+        var outPath = _path.join(TEMP_DIR, 'nested/deep/plugin-out.js');
+        nodefy.convert(inPath, outPath, function(err, result){
+            expect(err).toBe(null);
+            expect( readFile(outPath) ).toEqual( readOut('nested/deep/plugin') );
+            done();
+        });
+    });
+
 
 
     // ---
@@ -97,6 +110,7 @@ describe('convert', function () {
                 expect( readFile(BATCH_DIR + '/simplified_cjs-in.js') ).toEqual( readOut('simplified_cjs') );
                 expect( readFile(BATCH_DIR + '/named_mixed-in.js') ).toEqual( readOut('named_mixed') );
                 expect( readFile(BATCH_DIR + '/nested/magic_remaped-in.js') ).toEqual( readOut('nested/magic_remaped') );
+                expect( readFile(BATCH_DIR + '/nested/deep/plugin-in.js') ).toEqual( readOut('nested/deep/plugin') );
 
                 done();
             });

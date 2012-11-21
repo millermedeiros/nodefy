@@ -3,6 +3,7 @@ var _path = require('path');
 
 var _glob = require('glob');
 var _async = require('async');
+var _mkdirp = require('mkdirp');
 
 var _parser = require('./parser');
 
@@ -52,7 +53,7 @@ exports.convert = function(inputPath, outputPath, callback){
 function safeCreateDir(filePath, callback){
     var dir = _path.dirname(filePath);
     if (! _fs.existsSync(dir) ) {
-        _fs.mkdir(dir, callback);
+        _mkdirp(dir, callback);
     } else {
         callback(null);
     }

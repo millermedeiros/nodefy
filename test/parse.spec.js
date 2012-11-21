@@ -47,5 +47,11 @@ describe('parse', function () {
         expect( output ).toEqual( readOut('nested/magic_remaped') );
     });
 
+    it('should do simple conversion if dependency uses an AMD plugin', function () {
+        var output = nodefy.parse( readIn('nested/deep/plugin') );
+        expect( output ).toMatch( /require\(['"]\w+!\w+['"]\)/ );
+        expect( output ).toEqual( readOut('nested/deep/plugin') );
+    });
+
 });
 
