@@ -111,6 +111,7 @@ describe('convert', function () {
                 expect( readFile(BATCH_DIR + '/named_mixed-in.js') ).toEqual( readOut('named_mixed') );
                 expect( readFile(BATCH_DIR + '/nested/magic_remaped-in.js') ).toEqual( readOut('nested/magic_remaped') );
                 expect( readFile(BATCH_DIR + '/nested/deep/plugin-in.js') ).toEqual( readOut('nested/deep/plugin') );
+                expect( readFile(BATCH_DIR + '/strict-in.js') ).toEqual( readOut('strict') );
 
                 done();
             });

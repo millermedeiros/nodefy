@@ -31,11 +31,16 @@ exports.parse = function(raw){
     var def = defines[0];
     var args = def.expression['arguments'];
     var factory = getFactory( args );
+    var useStrict = getUseStrict( factory );
 
     // do replacements in-place to avoid modifying the code more than needed
+    if (useStrict) {
+        output += useStrict.expression.raw +';\n';
+    }
     output += raw.substring( 0, def.range[0] ); // anything before define
     output += getRequires(args, factory); // add requires
-    output += getBody(raw, factory.body); // module body
+    output += getBody(raw, factory.body, useStrict); // module body
+
     output += raw.substring( def.range[1], raw.length ); // anything after define
 
     return output;
@@ -99,23 +104,36 @@ function getFactory(args){
 }
 
 
-function getBody(raw, factoryBody){
+function getBody(raw, factoryBody, useStrict){
     var returnStatement = factoryBody.body.filter(function(node){
         return node.type === 'ReturnStatement';
     })[0];
 
     var body = '';
+    var bodyStart = useStrict? useStrict.expression.range[1] + 1 : factoryBody.range[0] + 1;
 
     if (returnStatement) {
-        body += raw.substring( factoryBody.range[0] + 1, returnStatement.range[0] );
+        body += raw.substring( bodyStart, returnStatement.range[0] );
         // "return ".length === 7 so we add "6" to returnStatement start
         body += 'module.exports ='+ raw.substring( returnStatement.range[0] + 6, factoryBody.range[1] - 1 );
     } else {
         // if using exports or module.exports or just a private module we
         // simply return the factoryBody content
-        body = raw.substring( factoryBody.range[0] + 1, factoryBody.range[1] - 1 );
+        body = raw.substring( bodyStart, factoryBody.range[1] - 1 );
     }
 
     return body;
+}
+
+
+function getUseStrict(factory){
+    return factory.body.body.filter(isUseStrict)[0];
+}
+
+
+function isUseStrict(node){
+    return node.type === 'ExpressionStatement' &&
+            node.expression.type === 'Literal' &&
+            node.expression.value === 'use strict';
 }
 
