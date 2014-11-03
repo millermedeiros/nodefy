@@ -8,10 +8,16 @@ var readOut = _helpers.readOut;
 
 describe('parse', function () {
 
-    it('should convert standard AMD', function () {
-        var output = nodefy.parse( readIn('basic') );
+    it('should populate `exports` for modules returning an object expression', function () {
+        var output = nodefy.parse( readIn('basic_returns_objexp') );
         expect( output ).toMatch( /require\(['"]\w/ );
-        expect( output ).toEqual( readOut('basic') );
+        expect( output ).toEqual( readOut('basic_returns_objexp') );
+    });
+
+    it('should populate `module.exports` for modules returning a non-object expression or identifier', function () {
+        var output = nodefy.parse( readIn('basic_returns_identifier') );
+        expect( output ).toMatch( /require\(['"]\w/ );
+        expect( output ).toEqual( readOut('basic_returns_identifier') );
     });
 
     it('should work properly with magic AMD dependencies', function () {
