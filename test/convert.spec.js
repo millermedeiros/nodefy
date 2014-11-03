@@ -31,31 +31,31 @@ describe('convert', function () {
     });
 
     it('should read file from fs and output to a new file', function (done) {
-        var inPath = _path.join(INPUT_DIR, 'basic-in.js');
-        var outPath = _path.join(TEMP_DIR, 'basic-out.js');
+        var inPath = _path.join(INPUT_DIR, 'basic_returns_objexp-in.js');
+        var outPath = _path.join(TEMP_DIR, 'basic_returns_objexp-out.js');
         expect( _fs.existsSync(outPath) ).toBe( false );
         nodefy.convert(inPath, outPath, function(err){
             expect(err).toBe(null);
-            expect( readFile(outPath) ).toEqual( readOut('basic') );
+            expect( readFile(outPath) ).toEqual( readOut('basic_returns_objexp') );
             done();
         });
     });
 
 
     it('should return string instead of writting to file if outputPath is missing', function (done) {
-        var inPath = _path.join(INPUT_DIR, 'basic-in.js');
+        var inPath = _path.join(INPUT_DIR, 'basic_returns_objexp-in.js');
         nodefy.convert(inPath, function(err, result){
             expect(err).toBe(null);
-            expect( result ).toBe( readOut('basic') );
+            expect( result ).toBe( readOut('basic_returns_objexp') );
             done();
         });
     });
 
     it('should return string instead of writting to file if outputPath is null', function (done) {
-        var inPath = _path.join(INPUT_DIR, 'basic-in.js');
+        var inPath = _path.join(INPUT_DIR, 'basic_returns_objexp-in.js');
         nodefy.convert(inPath, null, function(err, result){
             expect(err).toBe(null);
-            expect( result ).toBe( readOut('basic') );
+            expect( result ).toBe( readOut('basic_returns_objexp') );
             done();
         });
     });
@@ -106,7 +106,7 @@ describe('convert', function () {
             nodefy.batchConvert( glob, BATCH_DIR, function(err){
                 expect( err ).toBe(null);
 
-                expect( readFile(BATCH_DIR + '/basic-in.js') ).toEqual( readOut('basic') );
+                expect( readFile(BATCH_DIR + '/basic_returns_objexp-in.js') ).toEqual( readOut('basic_returns_objexp') );
                 expect( readFile(BATCH_DIR + '/simplified_cjs-in.js') ).toEqual( readOut('simplified_cjs') );
                 expect( readFile(BATCH_DIR + '/named_mixed-in.js') ).toEqual( readOut('named_mixed') );
                 expect( readFile(BATCH_DIR + '/nested/magic_remaped-in.js') ).toEqual( readOut('nested/magic_remaped') );
@@ -120,12 +120,12 @@ describe('convert', function () {
 
         it('should return aggregated string from all files if missing outputPath', function (done) {
 
-            var glob = _path.join(INPUT_DIR, '{basic,magic}-in.js');
+            var glob = _path.join(INPUT_DIR, '{basic_returns_objexp,magic}-in.js');
 
             nodefy.batchConvert(glob, function(err, result){
                 expect( err ).toBe(null);
 
-                var expected = readOut('basic') + readOut('magic');
+                var expected = readOut('basic_returns_objexp') + readOut('magic');
                 result = result.map(function(r){ return r.result; }).join('');
                 expect( result ).toBe( expected );
 
