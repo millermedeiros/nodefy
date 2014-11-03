@@ -119,7 +119,7 @@ function getBody(raw, factoryBody, useStrict){
             returnStatement.argument.properties.forEach(function (prop) {
                 var r = prop.value.range;
                 body += 'exports.'+ prop.key.name +' = ';
-                body += raw.substring(r[0], r[1]) + ';';
+                body += raw.substring(r[0], r[1]) + ';\n';
             });
             break;
         default:
