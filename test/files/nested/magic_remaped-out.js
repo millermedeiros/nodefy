@@ -4,6 +4,7 @@
 var exp = exports;
 var req = require;
 var mod = module;
+require('foo');
         exp.bar = req('foo').ipsum;
         exp.id = mod.id;
     

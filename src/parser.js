@@ -57,6 +57,7 @@ function getRequires(args, factory){
             dep : (deps.length)? deps[i] : SIMPLIFIED_CJS[i]
         };
     });
+    var depsTail = deps.length > params.length ? deps.slice(params.length) : [];
 
     params.forEach(function(param){
         if ( MAGIC_DEPS[param.dep] && !MAGIC_DEPS[param.name] ) {
@@ -67,6 +68,10 @@ function getRequires(args, factory){
             // skip "magic" dependencies
             requires.push( 'var '+ param.name +' = require(\''+ param.dep +'\');' );
         }
+    });
+
+    depsTail.forEach(function(dep){
+        requires.push( 'require(\''+ dep +'\');' );
     });
 
     return requires.join('\n');

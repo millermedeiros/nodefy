@@ -1,5 +1,6 @@
 // test comment
 var foo = require('foo');
+require('../bar/baz');
 
     var baz = require('../bar/baz');
 
