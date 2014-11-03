@@ -116,12 +116,17 @@ function getBody(raw, factoryBody, useStrict){
         body += raw.substring( bodyStart, returnStatement.range[0] );
         switch (returnStatement.argument.type) {
         case 'ObjectExpression':
-            returnStatement.argument.properties.forEach(function (prop) {
-                var r = prop.value.range;
-                body += 'exports.'+ prop.key.name +' = ';
-                body += raw.substring(r[0], r[1]) + ';\n';
-            });
-            break;
+            if (returnStatement.argument.properties.length > 0) {
+                returnStatement.argument.properties.forEach(function(prop){
+                    var r = prop.value.range;
+                    body += 'exports.'+ prop.key.name +' = ';
+                    body += raw.substring(r[0], r[1]) + ';\n';
+                });
+                break;
+            }
+
+            // returning an empty object expression translates to
+            // `module.exports = {}` by the default case
         default:
             // "return ".length === 7 so we add "6" to returnStatement start
             body += 'module.exports ='+ raw.substring( returnStatement.range[0] + 6, factoryBody.range[1] - 1 );
