@@ -118,8 +118,15 @@ function getBody(raw, factoryBody, useStrict){
         case 'ObjectExpression':
             if (returnStatement.argument.properties.length > 0) {
                 returnStatement.argument.properties.forEach(function(prop){
+                    switch (prop.key.type) {
+                    case 'Identifier':
+                        body += 'exports.'+ prop.key.name +' = ';
+                        break;
+                    case 'Literal':
+                        body += 'exports['+ prop.key.raw +'] = ';
+                        break;
+                    }
                     var r = prop.value.range;
-                    body += 'exports.'+ prop.key.name +' = ';
                     body += raw.substring(r[0], r[1]) + ';\n';
                 });
                 break;
