@@ -8,5 +8,8 @@ var baz = require('../bar/baz');
     exports.doFoo = function(){
             foo.bar( baz.dolor, ipsum );
         };
+    exports.doBar = function(){
+            baz.dolor();
+        };
 
 

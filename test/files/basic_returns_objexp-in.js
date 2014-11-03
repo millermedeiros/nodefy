@@ -7,6 +7,9 @@ define(['foo', '../bar/baz'], function (foo, baz) {
     return {
         doFoo: function(){
             foo.bar( baz.dolor, ipsum );
+        },
+        doBar: function(){
+            baz.dolor();
         }
     };
 });
