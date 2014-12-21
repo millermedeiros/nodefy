@@ -1,5 +1,5 @@
 
-var esprima = require('esprima');
+var esprima = require('esprima-fb');
 
 
 var MAGIC_DEPS = {

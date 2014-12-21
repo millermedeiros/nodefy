@@ -13,26 +13,31 @@
     "type": "git",
     "url": "https://github.com/millermedeiros/nodefy.git"
   },
-  "keywords": [ "amd", "cjs", "modules", "convert" ],
+  "keywords": [
+    "amd",
+    "cjs",
+    "modules",
+    "convert"
+  ],
   "author": {
-    "name" : "Miller Medeiros",
-    "url" : "http://blog.millermedeiros.com/"
+    "name": "Miller Medeiros",
+    "url": "http://blog.millermedeiros.com/"
   },
-  "dependencies" : {
-    "esprima" : ">= 1.0 <1.2",
-    "glob" : "~3.1.14",
-    "async" : "~0.1.22",
-    "commander" : "~1.1.0",
-    "mkdirp" : "~0.3.4"
+  "dependencies": {
+    "async": "~0.1.22",
+    "commander": "~1.1.0",
+    "esprima-fb": "^8001.2001.0-dev-harmony-fb",
+    "glob": "~3.1.14",
+    "mkdirp": "~0.3.4"
   },
-  "devDependencies" : {
-    "jasmine-node" : "1.x"
+  "devDependencies": {
+    "jasmine-node": "1.x"
   },
-  "bin" : {
-    "nodefy" : "bin/nodefy"
+  "bin": {
+    "nodefy": "bin/nodefy"
   },
-  "engine" : {
-    "node" : ">= 0.8"
+  "engine": {
+    "node": ">= 0.8"
   },
   "license": "MIT"
 }
