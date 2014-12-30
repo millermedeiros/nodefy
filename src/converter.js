@@ -46,7 +46,7 @@ exports.convert = function(inputPath, outputPath, callback){
             });
         }
 
-     });
+    });
 };
 
 
@@ -108,4 +108,3 @@ function getRoot(paths){
     });
     return _path.dirname(result);
 }
-

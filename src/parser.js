@@ -1,5 +1,5 @@
 
-var esprima = require('esprima');
+var esprima = require('esprima-fb');
 
 
 var MAGIC_DEPS = {
@@ -13,7 +13,8 @@ var SIMPLIFIED_CJS = ['require', 'exports', 'module'];
 
 
 // Convert AMD-style JavaScript string into node.js compatible module
-exports.parse = function(raw){
+exports.parse = function(raw, processRequire){
+    processRequire = processRequire || function(d) { return d; };
     var output = '';
     var ast = esprima.parse(raw, {
         range: true,
@@ -38,7 +39,7 @@ exports.parse = function(raw){
         output += useStrict.expression.raw +';\n';
     }
     output += raw.substring( 0, def.range[0] ); // anything before define
-    output += getRequires(args, factory); // add requires
+    output += getRequires(args, factory, processRequire); // add requires
     output += getBody(raw, factory.body, useStrict); // module body
 
     output += raw.substring( def.range[1], raw.length ); // anything after define
@@ -47,8 +48,10 @@ exports.parse = function(raw){
 };
 
 
-function getRequires(args, factory){
-    var requires = [];
+function getRequires(args, factory, processRequire){
+    var requires = [],
+        unformattedRequires = [];
+
     var deps = getDependenciesNames( args );
     var params = factory.params.map(function(param, i){
         return {
@@ -59,18 +62,63 @@ function getRequires(args, factory){
     });
 
     params.forEach(function(param){
+        param.dep = processRequire(param.dep);
+
         if ( MAGIC_DEPS[param.dep] && !MAGIC_DEPS[param.name] ) {
             // if user remaped magic dependency we declare a var
-            requires.push( 'var '+ param.name +' = '+ param.dep +';' );
+//            requires.push( 'var '+ param.name +' = '+ param.dep +';' );
+            unformattedRequires.push({
+                varName: param.name,
+                dep: param.dep,
+                magicDep: true
+            })
         } else if ( param.dep && !MAGIC_DEPS[param.dep] ) {
+
             // only do require for params that have a matching dependency also
             // skip "magic" dependencies
-            requires.push( 'var '+ param.name +' = require(\''+ param.dep +'\');' );
+//            requires.push( 'var '+ param.name +' = require(\''+ param.dep +'\');' );
+            unformattedRequires.push({
+                varName: param.name,
+                dep: param.dep,
+                magicDep: false
+            })
         }
+    });
+
+    unformattedRequires.forEach(function(req, i) {
+        var formattedReq = '',
+            prepend = '';
+
+        if (req.magicDep) {
+            formattedReq = processMagicDep(req.varName, req.dep);
+        } else {
+            formattedReq = processNormalDep(req.varName, req.dep);
+        }
+
+        if (i == 0) {
+            formattedReq = 'var ' + formattedReq;
+        } else {
+            formattedReq = "    " + formattedReq;
+        }
+
+
+        if (i == (unformattedRequires.length - 1)) {
+            formattedReq += ';';
+        } else {
+            formattedReq += ',';
+        }
+        requires.push(formattedReq);
     });
 
     return requires.join('\n');
 }
+
+processMagicDep = function(name, dep) {
+    return name +' = '+ dep;
+};
+processNormalDep = function(name, dep) {
+    return name +' = require(\''+ dep +'\')';
+};
 
 
 function getDependenciesNames(args){
@@ -127,7 +175,12 @@ function getBody(raw, factoryBody, useStrict){
 
 
 function getUseStrict(factory){
-    return factory.body.body.filter(isUseStrict)[0];
+    try {
+        var isStrict = factory.body.body.filter(isUseStrict)[0];
+    } catch (e) {
+        debugger;
+    }
+    return isStrict;
 }
 
 
