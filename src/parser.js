@@ -49,7 +49,9 @@ exports.parse = function(raw, processRequire){
 
 
 function getRequires(args, factory, processRequire){
-    var requires = [];
+    var requires = [],
+        unformattedRequires = [];
+
     var deps = getDependenciesNames( args );
     var params = factory.params.map(function(param, i){
         return {
@@ -64,16 +66,59 @@ function getRequires(args, factory, processRequire){
 
         if ( MAGIC_DEPS[param.dep] && !MAGIC_DEPS[param.name] ) {
             // if user remaped magic dependency we declare a var
-            requires.push( 'var '+ param.name +' = '+ param.dep +';' );
+//            requires.push( 'var '+ param.name +' = '+ param.dep +';' );
+            unformattedRequires.push({
+                varName: param.name,
+                dep: param.dep,
+                magicDep: true
+            })
         } else if ( param.dep && !MAGIC_DEPS[param.dep] ) {
+
             // only do require for params that have a matching dependency also
             // skip "magic" dependencies
-            requires.push( 'var '+ param.name +' = require(\''+ param.dep +'\');' );
+//            requires.push( 'var '+ param.name +' = require(\''+ param.dep +'\');' );
+            unformattedRequires.push({
+                varName: param.name,
+                dep: param.dep,
+                magicDep: false
+            })
         }
+    });
+
+    unformattedRequires.forEach(function(req, i) {
+        var formattedReq = '',
+            prepend = '';
+
+        if (req.magicDep) {
+            formattedReq = processMagicDep(req.varName, req.dep);
+        } else {
+            formattedReq = processNormalDep(req.varName, req.dep);
+        }
+
+        if (i == 0) {
+            formattedReq = 'var ' + formattedReq;
+        } else {
+            formattedReq = "    " + formattedReq;
+        }
+
+
+        if (i == (unformattedRequires.length - 1)) {
+            formattedReq += ';';
+        } else {
+            formattedReq += ',';
+        }
+        requires.push(formattedReq);
     });
 
     return requires.join('\n');
 }
+
+processMagicDep = function(name, dep) {
+    return name +' = '+ dep;
+};
+processNormalDep = function(name, dep) {
+    return name +' = require(\''+ dep +'\')';
+};
 
 
 function getDependenciesNames(args){
