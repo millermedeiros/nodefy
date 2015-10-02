@@ -2,6 +2,7 @@
 
 var _parser = require('./src/parser');
 var _converter = require('./src/converter');
+var _config = require('./src/config');
 
 
 /**
@@ -27,3 +28,8 @@ exports.convert = _converter.convert;
  */
 exports.batchConvert = _converter.batchConvert;
 
+/**
+ * Configure nodefy
+ * @param Object options
+ */
+exports.config = _config.configure;

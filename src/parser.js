@@ -1,5 +1,6 @@
 
 var esprima = require('esprima');
+var _config = require('./config');
 
 
 var MAGIC_DEPS = {
@@ -57,6 +58,7 @@ function getRequires(args, factory){
             dep : (deps.length)? deps[i] : SIMPLIFIED_CJS[i]
         };
     });
+    var mapLookup = _config.map['*'] || {};
 
     params.forEach(function(param){
         if ( MAGIC_DEPS[param.dep] && !MAGIC_DEPS[param.name] ) {
@@ -65,7 +67,8 @@ function getRequires(args, factory){
         } else if ( param.dep && !MAGIC_DEPS[param.dep] ) {
             // only do require for params that have a matching dependency also
             // skip "magic" dependencies
-            requires.push( 'var '+ param.name +' = require(\''+ param.dep +'\');' );
+            var depName = mapLookup[param.dep] || param.dep;
+            requires.push( 'var '+ param.name +' = require(\''+ depName +'\');' );
         }
     });
 

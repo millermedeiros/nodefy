@@ -53,5 +53,14 @@ describe('parse', function () {
         expect( output ).toEqual( readOut('nested/deep/plugin') );
     });
 
+    it('should do map replacement of dependencies', function () {
+        nodefy.config({
+            map: {'*': {'foo': 'baz'}}
+        })
+        var output = nodefy.parse( readIn('map') );
+        expect( output ).toMatch( /require\(['"]\w/ );
+        expect( output ).toEqual( readOut('map') );
+    });
+
 });
 
